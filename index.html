@@ -214,11 +214,26 @@
         ];
 
         async function fetchData() {
+            const tableBody = document.getElementById("tableBody");
             try {
-                const res = await fetch(API_URL);
-                currentData = await res.json();
-                renderTable(currentData);
-            } catch(e) { console.error(e); }
+                const res = await fetch(API_URL + "?t=" + new Date().getTime());
+                const json = await res.json();
+                
+                if (Array.isArray(json)) {
+                    currentData = json;
+                    if (currentData.length === 0) {
+                        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#aaa;">No members added yet. Click Admin -> Add to create one.</td></tr>`;
+                        document.getElementById("grandTotal").innerText = `₹0`;
+                    } else {
+                        renderTable(currentData);
+                    }
+                } else {
+                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#ff4d4d;">Error loading data from Google Sheets!</td></tr>`;
+                }
+            } catch(e) { 
+                console.error(e);
+                tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#ff4d4d;">Unable to connect to Google Sheets. Check permissions!</td></tr>`;
+            }
         }
 
         function formatDateReadable(dateStr) {
