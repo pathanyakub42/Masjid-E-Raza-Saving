@@ -393,4 +393,119 @@
                 let dateText = dateFormatted ? `Received On ${dateFormatted}` : (isPaid ? 'Received' : '');
 
                 let delBtnHtml = (isAdmin && isPaid) 
-                    ? `<button class="btn-del" onclic
+                    ? `<button class="btn-del" onclick="deletePayment('${person.Name}', '${m.key}')">🗑️ Delete</button>` 
+                    : '';
+
+                grid.innerHTML += `
+                    <div class="month-chip ${isPaid ? 'chip-paid' : 'chip-unpaid'}">
+                        <span>${m.label}</span>
+                        <span>${isPaid ? '₹' + parsed.amount : 'Pending'}</span>
+                        ${dateText ? `<span class="chip-date">${dateText}</span>` : ''}
+                        ${delBtnHtml}
+                    </div>
+                `;
+            });
+
+            document.getElementById("modalMemberSummary").innerText = `Total Paid: ₹${totalPaid} / Pending: ₹${1200 - totalPaid}`;
+            openModal('detailsModal');
+        }
+
+        async function deletePayment(memberName, monthKey) {
+            if(!confirm(`${memberName} ki ${monthKey} payment entry delete karna chahte hain?`)) return;
+
+            let person = currentData.find(p => p.Name === memberName);
+            if(person) {
+                person[monthKey] = 0;
+            }
+            renderTable(currentData);
+            showMemberDetails(memberName);
+
+            fetch(API_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "DELETE_PAYMENT", Name: memberName, mode: monthKey })
+            });
+        }
+
+        async function addMember() {
+            const nameInput = document.getElementById("newMemberName");
+            const name = nameInput.value.trim();
+            if(!name) return alert("Naam likhna zaroori hai!");
+
+            let newObj = { Name: name };
+            monthsList.forEach(m => newObj[m.key] = 0);
+
+            currentData.push(newObj);
+            renderTable(currentData);
+            closeModal('addMemberModal');
+            nameInput.value = "";
+
+            fetch(API_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "ADD", Name: name })
+            });
+        }
+
+        async function submitPayment() {
+            const name = document.getElementById("memberSelect").value;
+            const mode = document.getElementById("monthSelect").value;
+            const selectedDate = document.getElementById("payDate").value;
+
+            if(!mode) return alert("Koi month available nahi hai!");
+            if(!selectedDate) return alert("Kripya date select karein!");
+
+            const cellVal = `100|${selectedDate}`;
+
+            let person = currentData.find(p => p.Name === name);
+            if(person) {
+                if(mode === "FULL") {
+                    monthsList.forEach(m => person[m.key] = cellVal);
+                } else {
+                    person[mode] = cellVal;
+                }
+            }
+            renderTable(currentData);
+            closeModal('payModal');
+
+            fetch(API_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "UPDATE", Name: name, mode: mode, date: selectedDate })
+            });
+        }
+
+        function toggleAdmin() {
+            if(isAdmin) {
+                isAdmin = false;
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+                document.getElementById('adminStatus').innerText = "Public View";
+                document.getElementById('authBtn').innerText = "🔒 Admin";
+                document.getElementById('authBtn').style.background = "#e11d48";
+            } else { openModal('loginModal'); }
+        }
+
+        function verifyPassword() {
+            const input = document.getElementById('adminPassword').value;
+            if(input === ADMIN_PASS) {
+                isAdmin = true;
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
+                document.getElementById('adminStatus').innerText = "Admin Unlocked 🔓";
+                document.getElementById('authBtn').innerText = "🚪 Logout";
+                document.getElementById('authBtn').style.background = "#10b981";
+                closeModal('loginModal');
+                document.getElementById('adminPassword').value = "";
+            } else { alert("Incorrect Password!"); }
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function closeOnOverlay(event, id) { if(event.target.id === id) closeModal(id); }
+
+        fetchData();
+    </script>
+</body>
+</html>
