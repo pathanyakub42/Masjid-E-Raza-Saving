@@ -14,12 +14,24 @@
         .top-bar { width: 100%; max-width: 1100px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 10px; }
         .admin-status { font-size: 0.85rem; padding: 6px 12px; border-radius: 20px; background: rgba(255, 255, 255, 0.1); }
         .controls { display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn { background: linear-gradient(45deg, #00b4db, #0083b0); border: none; color: white; padding: 8px 14px; font-size: 0.85rem; font-weight: 600; border-radius: 20px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s ease; }
+        .btn { background: linear-gradient(45deg, #00b4db, #0083b0); border: none; color: white; padding: 8px 14px; font-size: 0.85rem; font-weight: 600; border-radius: 20px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s ease; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
         .btn-gold { background: linear-gradient(45deg, #ffd700, #ffa500); color: #000; }
         .btn-admin { background: #e11d48; }
+        .btn-wa { background: #25D366; color: #fff; padding: 4px 10px; font-size: 0.75rem; border-radius: 12px; margin-right: 5px; }
+        .btn-detail { background: rgba(255, 255, 255, 0.15); color: #ffd700; padding: 4px 10px; font-size: 0.75rem; border-radius: 12px; border: 1px solid rgba(255, 215, 0, 0.4); }
+        .btn-del { background: #ef4444; color: white; padding: 2px 6px; font-size: 0.65rem; border-radius: 6px; border: none; cursor: pointer; margin-top: 4px; }
         .admin-only { display: none; }
-        .stats-card { width: 100%; max-width: 1100px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 1rem; margin-bottom: 1.5rem; text-align: center; }
-        .stats-card h3 { font-size: 1.8rem; color: #00ff88; }
+        
+        .stats-card { width: 100%; max-width: 1100px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 1.2rem; margin-bottom: 1.5rem; text-align: center; }
+        .stats-card h3 { font-size: 1.8rem; color: #00ff88; margin-bottom: 0.5rem; }
+        .progress-container { width: 100%; background: rgba(255, 255, 255, 0.1); border-radius: 10px; height: 12px; overflow: hidden; margin-top: 8px; }
+        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #00ff88, #00b4db); transition: width 0.5s ease; }
+        .progress-text { font-size: 0.8rem; color: #ccc; margin-top: 5px; }
+
+        .filter-section { width: 100%; max-width: 1100px; display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
+        .search-input { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 20px; padding: 8px 16px; color: white; outline: none; width: 100%; max-width: 300px; font-size: 0.9rem; }
+        .search-input::placeholder { color: #aaa; }
+
         .container { width: 100%; max-width: 1100px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 1rem; overflow: hidden; margin-bottom: 2rem; }
         .table-wrapper { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
@@ -27,16 +39,65 @@
         th { color: #ffd700; text-transform: uppercase; font-size: 0.75rem; }
         .text-red { color: #ff4d4d; font-weight: 600; }
         .text-green { color: #00ff88; font-weight: 600; }
+        
         .qr-section { width: 100%; max-width: 1100px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 1.8rem 1rem; text-align: center; margin-top: auto; }
         .qr-card { background: #ffffff; padding: 15px; border-radius: 20px; display: inline-block; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
         .qr-card img { width: 320px; max-width: 85vw; height: auto; object-fit: contain; display: block; border-radius: 12px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 100; padding: 1rem; }
-        .modal-content { background: #1a2634; padding: 1.5rem; border-radius: 16px; width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
+
+        .month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; max-height: 320px; overflow-y: auto; padding-right: 5px; }
+        .month-chip { padding: 8px 6px; border-radius: 10px; text-align: center; font-size: 0.8rem; font-weight: 600; display: flex; flex-direction: column; gap: 2px; align-items: center; }
+        .chip-paid { background: rgba(0, 255, 136, 0.15); color: #00ff88; border: 1px solid #00ff88; }
+        .chip-unpaid { background: rgba(255, 77, 77, 0.12); color: #ff4d4d; border: 1px solid rgba(255, 77, 77, 0.3); }
+        .chip-date { font-size: 0.68rem; color: #e0e0e0; font-weight: 400; margin-top: 2px; }
+
+        .modal { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0, 0, 0, 0.75); 
+            backdrop-filter: blur(8px); 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 1000; 
+            padding: 1rem; 
+        }
+        .modal-content { 
+            position: relative; 
+            background: #1a2634; 
+            padding: 1.8rem 1.5rem; 
+            border-radius: 20px; 
+            width: 100%; 
+            max-width: 480px; 
+            border: 1px solid rgba(255,255,255,0.15); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            margin: auto;
+        }
+        .close-icon {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 1.4rem;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+        .close-icon:hover { color: #fff; }
+
         .form-group { margin-bottom: 1rem; }
         .form-group label { display: block; margin-bottom: 4px; font-size: 0.85rem; color: #ccc; }
         .form-group input, .form-group select { width: 100%; padding: 9px; border-radius: 8px; border: 1px solid #334e68; background: #0f172a; color: white; font-size: 0.95rem; }
         .modal-buttons { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1.2rem; }
         .btn-cancel { background: #475569; }
+
+        @media print {
+            .top-bar, .qr-section, .filter-section, .btn-wa, .btn-detail { display: none !important; }
+            body { background: white; color: black; }
+            th { color: black; }
+            td, th { border-bottom: 1px solid #ccc; }
+        }
     </style>
 </head>
 <body>
@@ -51,13 +112,22 @@
         <div class="controls">
             <button class="btn btn-admin" id="authBtn" onclick="toggleAdmin()">🔒 Admin</button>
             <button class="btn btn-gold admin-only" onclick="openModal('addMemberModal')">➕ Add</button>
-            <button class="btn admin-only" onclick="openModal('payModal')">💵 Update</button>
+            <button class="btn admin-only" onclick="openPayModal()">💵 Update</button>
+            <button class="btn" onclick="window.print()">🖨️ Print</button>
         </div>
     </div>
 
     <div class="stats-card">
         <p style="color:#aaa; font-size: 0.9rem;">Total Recieved Amount</p>
         <h3 id="grandTotal">₹0</h3>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">Target Progress: 0%</div>
+    </div>
+
+    <div class="filter-section">
+        <input type="text" class="search-input" id="searchInput" onkeyup="filterMembers()" placeholder="🔍 Search member name...">
     </div>
 
     <div class="container">
@@ -69,10 +139,11 @@
                         <th>Recieved</th>
                         <th>Target</th>
                         <th>Pending Amount</th>
+                        <th>Actions & Details</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <tr><td colspan="4" style="text-align:center;">Loading...</td></tr>
+                    <tr><td colspan="5" style="text-align:center;">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -87,8 +158,9 @@
     </div>
 
     <!-- Modals -->
-    <div class="modal" id="loginModal">
+    <div class="modal" id="loginModal" onclick="closeOnOverlay(event, 'loginModal')">
         <div class="modal-content">
+            <span class="close-icon" onclick="closeModal('loginModal')">&times;</span>
             <h3 style="color:#ffd700; margin-bottom:1.2rem;">Admin Authorization</h3>
             <div class="form-group">
                 <label>Enter Master Password</label>
@@ -101,8 +173,9 @@
         </div>
     </div>
 
-    <div class="modal" id="addMemberModal">
+    <div class="modal" id="addMemberModal" onclick="closeOnOverlay(event, 'addMemberModal')">
         <div class="modal-content">
+            <span class="close-icon" onclick="closeModal('addMemberModal')">&times;</span>
             <h3 style="color:#ffd700; margin-bottom:1.2rem;">Add New Member</h3>
             <div class="form-group">
                 <label>Member Name</label>
@@ -115,34 +188,37 @@
         </div>
     </div>
 
-    <div class="modal" id="payModal">
+    <div class="modal" id="payModal" onclick="closeOnOverlay(event, 'payModal')">
         <div class="modal-content">
+            <span class="close-icon" onclick="closeModal('payModal')">&times;</span>
             <h3 style="color:#ffd700; margin-bottom:1.2rem;">Add Payment Entry</h3>
             <div class="form-group">
                 <label>Select Member</label>
-                <select id="memberSelect"></select>
+                <select id="memberSelect" onchange="updateAvailableMonths()"></select>
             </div>
             <div class="form-group">
                 <label>Select Month / Mode</label>
-                <select id="monthSelect">
-                    <option value="FULL">Full 1 Year (₹1200)</option>
-                    <option value="Jan">January (₹100)</option>
-                    <option value="Feb">February (₹100)</option>
-                    <option value="Mar">March (₹100)</option>
-                    <option value="Apr">April (₹100)</option>
-                    <option value="May">May (₹100)</option>
-                    <option value="Jun">June (₹100)</option>
-                    <option value="Jul">July (₹100)</option>
-                    <option value="Aug">August (₹100)</option>
-                    <option value="Sep">September (₹100)</option>
-                    <option value="Oct">October (₹100)</option>
-                    <option value="Nov">November (₹100)</option>
-                    <option value="Dec">December (₹100)</option>
-                </select>
+                <select id="monthSelect"></select>
+            </div>
+            <div class="form-group">
+                <label>Select Payment Date</label>
+                <input type="date" id="payDate">
             </div>
             <div class="modal-buttons">
                 <button class="btn btn-cancel" onclick="closeModal('payModal')">Cancel</button>
                 <button class="btn" onclick="submitPayment()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="detailsModal" onclick="closeOnOverlay(event, 'detailsModal')">
+        <div class="modal-content">
+            <span class="close-icon" onclick="closeModal('detailsModal')">&times;</span>
+            <h3 style="color:#ffd700; margin-bottom:0.2rem;" id="modalMemberName">Member Details</h3>
+            <p style="color:#aaa; font-size:0.85rem;" id="modalMemberSummary">Monthly Payment Breakdown</p>
+            <div class="month-grid" id="monthGrid"></div>
+            <div class="modal-buttons">
+                <button class="btn btn-gold" onclick="closeModal('detailsModal')">Close</button>
             </div>
         </div>
     </div>
@@ -153,29 +229,90 @@
         let isAdmin = false;
         let currentData = [];
 
+        // Corrected 12 Months Cycle: Aug 2026 to Jul 2027
+        const monthsList = [
+            { key: 'Aug26', label: 'Aug 2026' },
+            { key: 'Sep26', label: 'Sep 2026' },
+            { key: 'Oct26', label: 'Oct 2026' },
+            { key: 'Nov26', label: 'Nov 2026' },
+            { key: 'Dec26', label: 'Dec 2026' },
+            { key: 'Jan27', label: 'Jan 2027' },
+            { key: 'Feb27', label: 'Feb 2027' },
+            { key: 'Mar27', label: 'Mar 2027' },
+            { key: 'Apr27', label: 'Apr 2027' },
+            { key: 'May27', label: 'May 2027' },
+            { key: 'Jun27', label: 'Jun 2027' },
+            { key: 'Jul27', label: 'Jul 2027' }
+        ];
+
         async function fetchData() {
             try {
                 const res = await fetch(API_URL);
                 currentData = await res.json();
-                renderTable();
+                renderTable(currentData);
             } catch(e) { console.error(e); }
         }
 
-        function renderTable() {
+        function formatDateReadable(dateStr) {
+            if(!dateStr) return '';
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const parts = dateStr.split('-');
+            if(parts.length === 3) {
+                const year = parts[0];
+                const monthIndex = parseInt(parts[1], 10) - 1;
+                const day = parseInt(parts[2], 10);
+                return `${day} ${months[monthIndex]} ${year}`;
+            }
+            return dateStr;
+        }
+
+        function parseVal(val) {
+            if(!val) return { amount: 0, date: "" };
+            let str = String(val);
+            if(str.includes("|")) {
+                let parts = str.split("|");
+                return { amount: Number(parts[0]) || 0, date: parts[1] || "" };
+            }
+            return { amount: Number(str) || 0, date: "" };
+        }
+
+        function renderTable(data) {
             const tableBody = document.getElementById("tableBody");
             const memberSelect = document.getElementById("memberSelect");
             tableBody.innerHTML = "";
             memberSelect.innerHTML = "";
             let grandTotal = 0;
-            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            let totalTarget = currentData.length * 1200;
 
-            currentData.forEach((row, idx) => {
+            data.forEach((row) => {
                 let total = 0;
-                months.forEach(m => total += Number(row[m] || 0));
+                let pendingMonths = [];
+
+                monthsList.forEach(m => {
+                    let parsed = parseVal(row[m.key] || row[m.label]);
+                    if(parsed.amount > 0) {
+                        total += parsed.amount;
+                    } else {
+                        pendingMonths.push(m.label);
+                    }
+                });
                 grandTotal += total;
 
                 let pending = 1200 - total;
                 let pendingDisplay = pending <= 0 ? `<span class="text-green">₹0 (Completed)</span>` : `<span class="text-red">₹${pending}</span>`;
+
+                // Dynamic WhatsApp Message with Member Name & Specific Pending Months
+                let pendingText = pendingMonths.length === monthsList.length 
+                    ? "poore saal (12 Months)" 
+                    : pendingMonths.join(", ");
+                
+                let waMessage = `Assalamu Alaikum ${row.Name}, Masjid E Raza Moharam saving ke ${pendingText} ke ₹${pending} baaki hain. Kripya jama karwayein.`;
+
+                let waBtn = pending > 0 
+                    ? `<a class="btn btn-wa" href="https://wa.me/?text=${encodeURIComponent(waMessage)}" target="_blank">📲 Remind</a>`
+                    : '';
+
+                let detailBtn = `<button class="btn btn-detail" onclick="showMemberDetails('${row.Name}')">📄 Payment Details</button>`;
 
                 tableBody.innerHTML += `
                     <tr>
@@ -183,83 +320,77 @@
                         <td>₹${total}</td>
                         <td>₹1200</td>
                         <td>${pendingDisplay}</td>
+                        <td>${waBtn} ${detailBtn}</td>
                     </tr>
                 `;
+            });
+
+            currentData.forEach(row => {
                 memberSelect.innerHTML += `<option value="${row.Name}">${row.Name}</option>`;
             });
+
             document.getElementById("grandTotal").innerText = `₹${grandTotal}`;
+            
+            let progressPercent = totalTarget > 0 ? Math.round((grandTotal / totalTarget) * 100) : 0;
+            document.getElementById("progressBar").style.width = `${progressPercent}%`;
+            document.getElementById("progressText").innerText = `Target Progress: ${progressPercent}% (Collected ₹${grandTotal} of ₹${totalTarget})`;
         }
 
-        async function addMember() {
-            const nameInput = document.getElementById("newMemberName");
-            const name = nameInput.value.trim();
-            if(!name) return alert("Naam likhna zaroori hai!");
-
-            const newObj = { Name: name, Jan:0, Feb:0, Mar:0, Apr:0, May:0, Jun:0, Jul:0, Aug:0, Sep:0, Oct:0, Nov:0, Dec:0 };
-            currentData.push(newObj);
-            renderTable();
-            closeModal('addMemberModal');
-            nameInput.value = "";
-
-            fetch(API_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "ADD", Name: name })
-            });
+        function filterMembers() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const filtered = currentData.filter(item => item.Name.toLowerCase().includes(query));
+            renderTable(filtered);
         }
 
-        async function submitPayment() {
-            const name = document.getElementById("memberSelect").value;
-            const mode = document.getElementById("monthSelect").value;
-            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        function openPayModal() {
+            if(currentData.length === 0) return alert("Pehle member add karein!");
+            document.getElementById("payDate").value = new Date().toISOString().split('T')[0];
+            updateAvailableMonths();
+            openModal('payModal');
+        }
 
-            let person = currentData.find(p => p.Name === name);
-            if(person) {
-                if(mode === "FULL") {
-                    months.forEach(m => person[m] = 100);
-                } else {
-                    person[mode] = 100;
+        function updateAvailableMonths() {
+            const selectedMember = document.getElementById("memberSelect").value;
+            const monthSelect = document.getElementById("monthSelect");
+            monthSelect.innerHTML = "";
+
+            const person = currentData.find(p => p.Name === selectedMember);
+            if(!person) return;
+
+            let pendingMonthsCount = 0;
+
+            monthsList.forEach(m => {
+                let parsed = parseVal(person[m.key] || person[m.label]);
+                if(parsed.amount === 0) {
+                    monthSelect.innerHTML += `<option value="${m.key}">${m.label} (₹100)</option>`;
+                    pendingMonthsCount++;
                 }
-            }
-            renderTable();
-            closeModal('payModal');
-
-            fetch(API_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "UPDATE", Name: name, mode: mode })
             });
+
+            if(pendingMonthsCount === monthsList.length) {
+                monthSelect.innerHTML = `<option value="FULL">Full 1 Year (₹1200)</option>` + monthSelect.innerHTML;
+            } else if(pendingMonthsCount === 0) {
+                monthSelect.innerHTML = `<option value="">Sabhi Month ki Payment Complete h ✓</option>`;
+            }
         }
 
-        function toggleAdmin() {
-            if(isAdmin) {
-                isAdmin = false;
-                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-                document.getElementById('adminStatus').innerText = "Public View";
-                document.getElementById('authBtn').innerText = "🔒 Admin";
-                document.getElementById('authBtn').style.background = "#e11d48";
-            } else { openModal('loginModal'); }
-        }
+        function showMemberDetails(memberName) {
+            const person = currentData.find(p => p.Name === memberName);
+            if(!person) return;
 
-        function verifyPassword() {
-            const input = document.getElementById('adminPassword').value;
-            if(input === ADMIN_PASS) {
-                isAdmin = true;
-                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
-                document.getElementById('adminStatus').innerText = "Admin Unlocked 🔓";
-                document.getElementById('authBtn').innerText = "🚪 Logout";
-                document.getElementById('authBtn').style.background = "#10b981";
-                closeModal('loginModal');
-                document.getElementById('adminPassword').value = "";
-            } else { alert("Incorrect Password!"); }
-        }
+            document.getElementById("modalMemberName").innerText = person.Name;
+            
+            let totalPaid = 0;
+            const grid = document.getElementById("monthGrid");
+            grid.innerHTML = "";
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+            monthsList.forEach(m => {
+                let parsed = parseVal(person[m.key] || person[m.label]);
+                let isPaid = parsed.amount > 0;
+                if(isPaid) totalPaid += parsed.amount;
 
-        fetchData();
-    </script>
-</body>
-</html>
+                let dateFormatted = formatDateReadable(parsed.date);
+                let dateText = dateFormatted ? `Received On ${dateFormatted}` : (isPaid ? 'Received' : '');
+
+                let delBtnHtml = (isAdmin && isPaid) 
+                    ? `<button class="btn-del" onclic
