@@ -6,257 +6,37 @@
     <title>Masjid E Raza - Saving For Moharam</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: #ffffff;
-            min-height: 100vh;
-            padding: 1.5rem 0.8rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .header h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, #ffd700, #ffa500);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .header h2 {
-            font-size: 1.1rem;
-            color: #e0e0e0;
-            font-weight: 300;
-        }
-
-        .top-bar {
-            width: 100%;
-            max-width: 1100px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.2rem;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .admin-status {
-            font-size: 0.85rem;
-            padding: 6px 12px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .controls {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            background: linear-gradient(45deg, #00b4db, #0083b0);
-            border: none;
-            color: white;
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-radius: 20px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-        }
-
-        .btn-gold {
-            background: linear-gradient(45deg, #ffd700, #ffa500);
-            color: #000;
-        }
-
-        .btn-admin {
-            background: #e11d48;
-        }
-
-        .admin-only {
-            display: none;
-        }
-
-        .stats-card {
-            width: 100%;
-            max-width: 1100px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .stats-card h3 {
-            font-size: 1.8rem;
-            color: #00ff88;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1100px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 1rem;
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
-
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            white-space: nowrap;
-        }
-
-        th, td {
-            padding: 0.8rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.9rem;
-        }
-
-        th {
-            color: #ffd700;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-        }
-
-        .text-red {
-            color: #ff4d4d;
-            font-weight: 600;
-        }
-
-        .text-green {
-            color: #00ff88;
-            font-weight: 600;
-        }
-
-        /* Large & Clear QR Code Section */
-        .qr-section {
-            width: 100%;
-            max-width: 1100px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 1.8rem 1rem;
-            text-align: center;
-            margin-top: auto;
-        }
-
-        .qr-section h3 {
-            color: #ffd700;
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .qr-section p {
-            color: #ccc;
-            font-size: 0.9rem;
-            margin-bottom: 1.2rem;
-        }
-
-        .qr-card {
-            background: #ffffff;
-            padding: 15px;
-            border-radius: 20px;
-            display: inline-block;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-        }
-
-        .qr-card img {
-            width: 320px;
-            max-width: 85vw;
-            height: auto;
-            object-fit: contain;
-            display: block;
-            border-radius: 12px;
-        }
-
-        /* Modal / Form Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            padding: 1rem;
-        }
-
-        .modal-content {
-            background: #1a2634;
-            padding: 1.5rem;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 400px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .modal-content h3 {
-            margin-bottom: 1.2rem;
-            color: #ffd700;
-            font-size: 1.2rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 4px;
-            font-size: 0.85rem;
-            color: #ccc;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 9px;
-            border-radius: 8px;
-            border: 1px solid #334e68;
-            background: #0f172a;
-            color: white;
-            font-size: 0.95rem;
-        }
-
-        .modal-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 1.2rem;
-        }
-
-        .btn-cancel {
-            background: #475569;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: #ffffff; min-height: 100vh; padding: 1.5rem 0.8rem; display: flex; flex-direction: column; align-items: center; }
+        .header { text-align: center; margin-bottom: 1.5rem; }
+        .header h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(45deg, #ffd700, #ffa500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header h2 { font-size: 1.1rem; color: #e0e0e0; font-weight: 300; }
+        .top-bar { width: 100%; max-width: 1100px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 10px; }
+        .admin-status { font-size: 0.85rem; padding: 6px 12px; border-radius: 20px; background: rgba(255, 255, 255, 0.1); }
+        .controls { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn { background: linear-gradient(45deg, #00b4db, #0083b0); border: none; color: white; padding: 8px 14px; font-size: 0.85rem; font-weight: 600; border-radius: 20px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s ease; }
+        .btn-gold { background: linear-gradient(45deg, #ffd700, #ffa500); color: #000; }
+        .btn-admin { background: #e11d48; }
+        .admin-only { display: none; }
+        .stats-card { width: 100%; max-width: 1100px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 1rem; margin-bottom: 1.5rem; text-align: center; }
+        .stats-card h3 { font-size: 1.8rem; color: #00ff88; }
+        .container { width: 100%; max-width: 1100px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 1rem; overflow: hidden; margin-bottom: 2rem; }
+        .table-wrapper { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+        th, td { padding: 0.8rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.9rem; }
+        th { color: #ffd700; text-transform: uppercase; font-size: 0.75rem; }
+        .text-red { color: #ff4d4d; font-weight: 600; }
+        .text-green { color: #00ff88; font-weight: 600; }
+        .qr-section { width: 100%; max-width: 1100px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 1.8rem 1rem; text-align: center; margin-top: auto; }
+        .qr-card { background: #ffffff; padding: 15px; border-radius: 20px; display: inline-block; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .qr-card img { width: 320px; max-width: 85vw; height: auto; object-fit: contain; display: block; border-radius: 12px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 100; padding: 1rem; }
+        .modal-content { background: #1a2634; padding: 1.5rem; border-radius: 16px; width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 4px; font-size: 0.85rem; color: #ccc; }
+        .form-group input, .form-group select { width: 100%; padding: 9px; border-radius: 8px; border: 1px solid #334e68; background: #0f172a; color: white; font-size: 0.95rem; }
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1.2rem; }
+        .btn-cancel { background: #475569; }
     </style>
 </head>
 <body>
@@ -298,19 +78,18 @@
         </div>
     </div>
 
-    <!-- Large QR Code Section -->
     <div class="qr-section">
-        <h3>Online Payment / QR Code</h3>
-        <p>Scan to pay your monthly saving (₹100 / ₹1200)</p>
+        <h3 style="color:#ffd700; font-size:1.3rem; margin-bottom:0.5rem;">Online Payment / QR Code</h3>
+        <p style="color:#ccc; font-size:0.9rem; margin-bottom:1.2rem;">Scan to pay your monthly saving (₹100 / ₹1200)</p>
         <div class="qr-card">
             <img src="https://i.ibb.co/zhkqb2YH/IMG-20260827-WA0015-1.jpg" alt="Payment QR Code">
         </div>
     </div>
 
-    <!-- Admin Login Modal -->
+    <!-- Modals -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
-            <h3>Admin Authorization</h3>
+            <h3 style="color:#ffd700; margin-bottom:1.2rem;">Admin Authorization</h3>
             <div class="form-group">
                 <label>Enter Master Password</label>
                 <input type="password" id="adminPassword" placeholder="Enter password">
@@ -322,10 +101,9 @@
         </div>
     </div>
 
-    <!-- Add Member Modal -->
     <div class="modal" id="addMemberModal">
         <div class="modal-content">
-            <h3>Add New Member</h3>
+            <h3 style="color:#ffd700; margin-bottom:1.2rem;">Add New Member</h3>
             <div class="form-group">
                 <label>Member Name</label>
                 <input type="text" id="newMemberName" placeholder="Enter full name">
@@ -337,10 +115,9 @@
         </div>
     </div>
 
-    <!-- Payment Modal -->
     <div class="modal" id="payModal">
         <div class="modal-content">
-            <h3>Add Payment Entry</h3>
+            <h3 style="color:#ffd700; margin-bottom:1.2rem;">Add Payment Entry</h3>
             <div class="form-group">
                 <label>Select Member</label>
                 <select id="memberSelect"></select>
@@ -371,7 +148,7 @@
     </div>
 
     <script>
-        const API_URL = "https://api.sheetbest.com/sheets/06b718d4-0dd2-456b-ae5d-f61428e2f9d9";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwXkSe6Xu46_fMXwPPGgGNf3heVC0NYpL-EuqCZOCywnZt7ZWGLaV2mVA6gvQ0xrYzB/exec";
         const ADMIN_PASS = "Yakubkhan";
         let isAdmin = false;
         let currentData = [];
@@ -381,9 +158,7 @@
                 const res = await fetch(API_URL);
                 currentData = await res.json();
                 renderTable();
-            } catch(e) {
-                console.error(e);
-            }
+            } catch(e) { console.error(e); }
         }
 
         function renderTable() {
@@ -392,7 +167,6 @@
             tableBody.innerHTML = "";
             memberSelect.innerHTML = "";
             let grandTotal = 0;
-
             const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
             currentData.forEach((row, idx) => {
@@ -401,13 +175,7 @@
                 grandTotal += total;
 
                 let pending = 1200 - total;
-                let pendingDisplay = "";
-
-                if (pending <= 0) {
-                    pendingDisplay = `<span class="text-green">₹0 (Completed)</span>`;
-                } else {
-                    pendingDisplay = `<span class="text-red">₹${pending}</span>`;
-                }
+                let pendingDisplay = pending <= 0 ? `<span class="text-green">₹0 (Completed)</span>` : `<span class="text-red">₹${pending}</span>`;
 
                 tableBody.innerHTML += `
                     <tr>
@@ -417,11 +185,52 @@
                         <td>${pendingDisplay}</td>
                     </tr>
                 `;
-
-                memberSelect.innerHTML += `<option value="${idx}">${row.Name}</option>`;
+                memberSelect.innerHTML += `<option value="${row.Name}">${row.Name}</option>`;
             });
-
             document.getElementById("grandTotal").innerText = `₹${grandTotal}`;
+        }
+
+        async function addMember() {
+            const nameInput = document.getElementById("newMemberName");
+            const name = nameInput.value.trim();
+            if(!name) return alert("Naam likhna zaroori hai!");
+
+            const newObj = { Name: name, Jan:0, Feb:0, Mar:0, Apr:0, May:0, Jun:0, Jul:0, Aug:0, Sep:0, Oct:0, Nov:0, Dec:0 };
+            currentData.push(newObj);
+            renderTable();
+            closeModal('addMemberModal');
+            nameInput.value = "";
+
+            fetch(API_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "ADD", Name: name })
+            });
+        }
+
+        async function submitPayment() {
+            const name = document.getElementById("memberSelect").value;
+            const mode = document.getElementById("monthSelect").value;
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+            let person = currentData.find(p => p.Name === name);
+            if(person) {
+                if(mode === "FULL") {
+                    months.forEach(m => person[m] = 100);
+                } else {
+                    person[mode] = 100;
+                }
+            }
+            renderTable();
+            closeModal('payModal');
+
+            fetch(API_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "UPDATE", Name: name, mode: mode })
+            });
         }
 
         function toggleAdmin() {
@@ -431,9 +240,7 @@
                 document.getElementById('adminStatus').innerText = "Public View";
                 document.getElementById('authBtn').innerText = "🔒 Admin";
                 document.getElementById('authBtn').style.background = "#e11d48";
-            } else {
-                openModal('loginModal');
-            }
+            } else { openModal('loginModal'); }
         }
 
         function verifyPassword() {
@@ -446,53 +253,7 @@
                 document.getElementById('authBtn').style.background = "#10b981";
                 closeModal('loginModal');
                 document.getElementById('adminPassword').value = "";
-            } else {
-                alert("Incorrect Password!");
-            }
-        }
-
-        async function addMember() {
-            const name = document.getElementById("newMemberName").value.trim();
-            if(!name) return alert("Naam likhna zaroori hai!");
-
-            const newRow = {
-                Name: name, Jan:0, Feb:0, Mar:0, Apr:0, May:0, Jun:0, Jul:0, Aug:0, Sep:0, Oct:0, Nov:0, Dec:0
-            };
-
-            closeModal('addMemberModal');
-            document.getElementById("newMemberName").value = "";
-
-            await fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify([newRow])
-            });
-
-            fetchData();
-        }
-
-        async function submitPayment() {
-            const idx = document.getElementById("memberSelect").value;
-            const mode = document.getElementById("monthSelect").value;
-            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-            let updatePayload = {};
-
-            if(mode === "FULL") {
-                months.forEach(m => updatePayload[m] = 100);
-            } else {
-                updatePayload[mode] = 100;
-            }
-
-            closeModal('payModal');
-
-            await fetch(`${API_URL}/${idx}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(updatePayload)
-            });
-
-            fetchData();
+            } else { alert("Incorrect Password!"); }
         }
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
