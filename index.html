@@ -8,9 +8,16 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: #ffffff; min-height: 100vh; padding: 1.5rem 0.8rem; display: flex; flex-direction: column; align-items: center; }
-        .header { text-align: center; margin-bottom: 1.5rem; }
+        
+        .header { text-align: center; margin-bottom: 1.2rem; }
         .header h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(45deg, #ffd700, #ffa500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .header h2 { font-size: 1.1rem; color: #e0e0e0; font-weight: 300; }
+        
+        .connection-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); }
+        .badge-dot { width: 8px; height: 8px; border-radius: 50%; background: #eab308; }
+        .badge-connected .badge-dot { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+        .badge-disconnected .badge-dot { background: #ef4444; }
+
         .top-bar { width: 100%; max-width: 1100px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 10px; }
         .admin-status { font-size: 0.85rem; padding: 6px 12px; border-radius: 20px; background: rgba(255, 255, 255, 0.1); }
         .controls { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -62,7 +69,7 @@
         .btn-cancel { background: #475569; }
 
         @media print {
-            .top-bar, .qr-section, .filter-section, .btn-wa, .btn-detail { display: none !important; }
+            .top-bar, .qr-section, .filter-section, .btn-wa, .btn-detail, .connection-badge { display: none !important; }
             body { background: white; color: black; }
             th { color: black; }
             td, th { border-bottom: 1px solid #ccc; }
@@ -74,6 +81,11 @@
     <div class="header">
         <h1>Masjid E Raza</h1>
         <h2>Saving For Moharam</h2>
+    </div>
+
+    <div class="connection-badge" id="statusBadge">
+        <div class="badge-dot"></div>
+        <span id="statusText">Connecting Google Sheet...</span>
     </div>
 
     <div class="top-bar">
@@ -213,6 +225,18 @@
             { key: 'Jul27', label: 'Jul 2027' }
         ];
 
+        function setStatus(connected, text) {
+            const badge = document.getElementById("statusBadge");
+            const statusText = document.getElementById("statusText");
+            if(connected) {
+                badge.className = "connection-badge badge-connected";
+                statusText.innerText = text || "Google Sheet connected";
+            } else {
+                badge.className = "connection-badge badge-disconnected";
+                statusText.innerText = text || "Connection Failed";
+            }
+        }
+
         async function fetchData() {
             const tableBody = document.getElementById("tableBody");
             try {
@@ -221,6 +245,7 @@
                 
                 if (Array.isArray(json)) {
                     currentData = json;
+                    setStatus(true, "Google Sheet connected");
                     if (currentData.length === 0) {
                         tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#aaa;">No members added yet. Click Admin -> Add to create one.</td></tr>`;
                         document.getElementById("grandTotal").innerText = `₹0`;
@@ -228,10 +253,12 @@
                         renderTable(currentData);
                     }
                 } else {
+                    setStatus(false, "Sheet Data Error");
                     tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#ff4d4d;">Error loading data from Google Sheets!</td></tr>`;
                 }
             } catch(e) { 
                 console.error(e);
+                setStatus(false, "Connecting Issue");
                 tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#ff4d4d;">Unable to connect to Google Sheets. Check permissions!</td></tr>`;
             }
         }
@@ -392,6 +419,19 @@
             openModal('detailsModal');
         }
 
+        async function sendPayload(payload) {
+            try {
+                await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain" },
+                    body: JSON.stringify(payload)
+                });
+            } catch(err) {
+                const params = new URLSearchParams(payload).toString();
+                await fetch(API_URL + "?" + params, { mode: "no-cors" });
+            }
+        }
+
         async function deletePayment(memberName, monthKey) {
             if(!confirm(`${memberName} ki ${monthKey} payment entry delete karna chahte hain?`)) return;
 
@@ -402,14 +442,8 @@
             renderTable(currentData);
             showMemberDetails(memberName);
 
-            fetch(API_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "DELETE_PAYMENT", Name: memberName, mode: monthKey })
-            }).then(() => {
-                setTimeout(fetchData, 1500);
-            });
+            await sendPayload({ action: "DELETE_PAYMENT", Name: memberName, mode: monthKey });
+            setTimeout(fetchData, 3000);
         }
 
         async function addMember() {
@@ -425,14 +459,8 @@
             closeModal('addMemberModal');
             nameInput.value = "";
 
-            fetch(API_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "ADD", Name: name })
-            }).then(() => {
-                setTimeout(fetchData, 1500);
-            });
+            await sendPayload({ action: "ADD", Name: name });
+            setTimeout(fetchData, 3000);
         }
 
         async function submitPayment() {
@@ -456,14 +484,8 @@
             renderTable(currentData);
             closeModal('payModal');
 
-            fetch(API_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "UPDATE", Name: name, mode: mode, date: selectedDate })
-            }).then(() => {
-                setTimeout(fetchData, 1500);
-            });
+            await sendPayload({ action: "UPDATE", Name: name, mode: mode, date: selectedDate });
+            setTimeout(fetchData, 3000);
         }
 
         function toggleAdmin() {
