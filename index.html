@@ -277,13 +277,15 @@
         }
 
         function parseVal(val) {
-            if(!val) return { amount: 0, date: "" };
-            let str = String(val);
-            if(str.includes("|")) {
+            if (val === undefined || val === null || val === "") return { amount: 0, date: "" };
+            let str = String(val).trim();
+            if (str.includes("|")) {
                 let parts = str.split("|");
-                return { amount: Number(parts[0]) || 0, date: parts[1] || "" };
+                let num = parseFloat(parts[0]);
+                return { amount: isNaN(num) ? 0 : num, date: parts[1] || "" };
             }
-            return { amount: Number(str) || 0, date: "" };
+            let num = parseFloat(str);
+            return { amount: isNaN(num) ? 0 : num, date: "" };
         }
 
         function renderTable(data) {
@@ -299,8 +301,9 @@
                 let pendingMonths = [];
 
                 monthsList.forEach(m => {
-                    let parsed = parseVal(row[m.key] || row[m.label]);
-                    if(parsed.amount > 0) {
+                    let cellData = row[m.key] !== undefined ? row[m.key] : row[m.label];
+                    let parsed = parseVal(cellData);
+                    if (parsed.amount > 0) {
                         total += parsed.amount;
                     } else {
                         pendingMonths.push(m.label);
@@ -321,11 +324,11 @@
                     ? `<a class="btn btn-wa" href="https://wa.me/?text=${encodeURIComponent(waMessage)}" target="_blank">📲 Remind</a>`
                     : '';
 
-                let detailBtn = `<button class="btn btn-detail" onclick="showMemberDetails('${row.Name}')">📄 Payment Details</button>`;
+                let detailBtn = `<button class="btn btn-detail" onclick="showMemberDetails('${row.Name}')">📄 Details</button>`;
 
                 tableBody.innerHTML += `
                     <tr>
-                        <td><strong>${row.Name}</strong></td>
+                        <td style="min-width:140px;"><strong>${row.Name}</strong></td>
                         <td>₹${total}</td>
                         <td>₹1200</td>
                         <td>${pendingDisplay}</td>
@@ -369,7 +372,8 @@
             let pendingMonthsCount = 0;
 
             monthsList.forEach(m => {
-                let parsed = parseVal(person[m.key] || person[m.label]);
+                let cellData = person[m.key] !== undefined ? person[m.key] : person[m.label];
+                let parsed = parseVal(cellData);
                 if(parsed.amount === 0) {
                     monthSelect.innerHTML += `<option value="${m.key}">${m.label} (₹100)</option>`;
                     pendingMonthsCount++;
@@ -394,7 +398,8 @@
             grid.innerHTML = "";
 
             monthsList.forEach(m => {
-                let parsed = parseVal(person[m.key] || person[m.label]);
+                let cellData = person[m.key] !== undefined ? person[m.key] : person[m.label];
+                let parsed = parseVal(cellData);
                 let isPaid = parsed.amount > 0;
                 if(isPaid) totalPaid += parsed.amount;
 
