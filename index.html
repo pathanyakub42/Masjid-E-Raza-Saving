@@ -279,37 +279,15 @@
             return dateStr;
         }
 
-        function parseVal(val) {
-            if (val === undefined || val === null || val === "" || val === "0") return { amount: 0, date: "" };
-            let str = String(val).trim();
-            if (str.includes("|")) {
-                let parts = str.split("|");
-                let num = parseFloat(parts[0]);
-                return { amount: isNaN(num) ? 0 : num, date: parts[1] || "" };
-            }
-            let num = parseFloat(str);
-            return { amount: isNaN(num) ? 0 : num, date: "" };
-        }
-
-        function getCellData(row, monthKey) {
-            if (!row) return 0;
-            const target = String(monthKey).trim().toLowerCase();
+        function getVal(row, keyName) {
+            if (!row) return "";
+            const target = String(keyName).trim().toLowerCase();
             for (let k in row) {
                 if (String(k).trim().toLowerCase() === target) {
                     return row[k];
                 }
             }
-            return 0;
-        }
-
-        function getNameVal(row) {
-            if (!row) return "";
-            for (let k in row) {
-                if (String(k).trim().toLowerCase() === "name") {
-                    return row[k];
-                }
-            }
-            return row.Name || "";
+            return "";
         }
 
         function renderTable(data) {
@@ -323,13 +301,13 @@
             data.forEach((row) => {
                 let total = 0;
                 let pendingMonths = [];
-                let memberName = getNameVal(row);
+                let memberName = getVal(row, "Name");
 
                 monthsList.forEach(m => {
-                    let cellValue = getCellData(row, m.key);
-                    let parsed = parseVal(cellValue);
-                    if (parsed.amount > 0) {
-                        total += parsed.amount;
+                    let amtStr = getVal(row, m.key);
+                    let amt = parseFloat(amtStr);
+                    if (!isNaN(amt) && amt > 0) {
+                        total += amt;
                     } else {
                         pendingMonths.push(m.label);
                     }
@@ -338,17 +316,9 @@
 
                 let pending = 1200 - total;
                 let pendingDisplay = pending <= 0 ? `<span class="text-green">₹0 (Completed)</span>` : `<span class="text-red">₹${pending}</span>`;
-
-                let pendingText = pendingMonths.length === monthsList.length 
-                    ? "poore saal (12 Months)" 
-                    : pendingMonths.join(", ");
-                
+                let pendingText = pendingMonths.length === monthsList.length ? "poore saal (12 Months)" : pendingMonths.join(", ");
                 let waMessage = `Assalamu Alaikum ${memberName}, Masjid E Raza Moharam saving ke ${pendingText} ke ₹${pending} baaki hain. Kripya jama karwayein.`;
-
-                let waBtn = pending > 0 
-                    ? `<a class="btn btn-wa" href="https://wa.me/?text=${encodeURIComponent(waMessage)}" target="_blank">📲 Remind</a>`
-                    : '';
-
+                let waBtn = pending > 0 ? `<a class="btn btn-wa" href="https://wa.me/?text=${encodeURIComponent(waMessage)}" target="_blank">📲 Remind</a>` : '';
                 let detailBtn = `<button class="btn btn-detail" onclick="showMemberDetails('${memberName}')">📄 Details</button>`;
 
                 tableBody.innerHTML += `
@@ -363,12 +333,11 @@
             });
 
             currentData.forEach(row => {
-                let name = getNameVal(row);
+                let name = getVal(row, "Name");
                 memberSelect.innerHTML += `<option value="${name}">${name}</option>`;
             });
 
             document.getElementById("grandTotal").innerText = `₹${grandTotal}`;
-            
             let progressPercent = totalTarget > 0 ? Math.round((grandTotal / totalTarget) * 100) : 0;
             document.getElementById("progressBar").style.width = `${progressPercent}%`;
             document.getElementById("progressText").innerText = `Target Progress: ${progressPercent}% (Collected ₹${grandTotal} of ₹${totalTarget})`;
@@ -376,7 +345,7 @@
 
         function filterMembers() {
             const query = document.getElementById("searchInput").value.toLowerCase();
-            const filtered = currentData.filter(item => getNameVal(item).toLowerCase().includes(query));
+            const filtered = currentData.filter(item => getVal(item, "Name").toLowerCase().includes(query));
             renderTable(filtered);
         }
 
@@ -392,15 +361,14 @@
             const monthSelect = document.getElementById("monthSelect");
             monthSelect.innerHTML = "";
 
-            const person = currentData.find(p => getNameVal(p) === selectedMember);
+            const person = currentData.find(p => getVal(p, "Name") === selectedMember);
             if(!person) return;
 
             let pendingMonthsCount = 0;
 
             monthsList.forEach(m => {
-                let cellValue = getCellData(person, m.key);
-                let parsed = parseVal(cellValue);
-                if(parsed.amount === 0) {
+                let amt = parseFloat(getVal(person, m.key));
+                if(isNaN(amt) || amt === 0) {
                     monthSelect.innerHTML += `<option value="${m.key}">${m.label} (₹100)</option>`;
                     pendingMonthsCount++;
                 }
@@ -414,7 +382,7 @@
         }
 
         function showMemberDetails(memberName) {
-            const person = currentData.find(p => getNameVal(p) === memberName);
+            const person = currentData.find(p => getVal(p, "Name") === memberName);
             if(!person) return;
 
             document.getElementById("modalMemberName").innerText = memberName;
@@ -424,12 +392,12 @@
             grid.innerHTML = "";
 
             monthsList.forEach(m => {
-                let cellValue = getCellData(person, m.key);
-                let parsed = parseVal(cellValue);
-                let isPaid = parsed.amount > 0;
-                if(isPaid) totalPaid += parsed.amount;
+                let amt = parseFloat(getVal(person, m.key));
+                let dateVal = getVal(person, m.key + "_Date");
+                let isPaid = !isNaN(amt) && amt > 0;
+                if(isPaid) totalPaid += amt;
 
-                let dateFormatted = formatDateReadable(parsed.date);
+                let dateFormatted = formatDateReadable(dateVal);
                 let dateText = dateFormatted ? `Received On ${dateFormatted}` : (isPaid ? 'Received' : '');
 
                 let delBtnHtml = (isAdmin && isPaid) 
@@ -439,7 +407,7 @@
                 grid.innerHTML += `
                     <div class="month-chip ${isPaid ? 'chip-paid' : 'chip-unpaid'}">
                         <span>${m.label}</span>
-                        <span>${isPaid ? '₹' + parsed.amount : 'Pending'}</span>
+                        <span>${isPaid ? '₹' + amt : 'Pending'}</span>
                         ${dateText ? `<span class="chip-date">${dateText}</span>` : ''}
                         ${delBtnHtml}
                     </div>
@@ -462,9 +430,10 @@
         async function deletePayment(memberName, monthKey) {
             if(!confirm(`${memberName} ki ${monthKey} payment entry delete karna chahte hain?`)) return;
 
-            let person = currentData.find(p => getNameVal(p) === memberName);
+            let person = currentData.find(p => getVal(p, "Name") === memberName);
             if(person) {
                 person[monthKey] = "0";
+                person[monthKey + "_Date"] = "";
             }
             renderTable(currentData);
             showMemberDetails(memberName);
@@ -479,7 +448,10 @@
             if(!name) return alert("Naam likhna zaroori hai!");
 
             let newObj = { Name: name };
-            monthsList.forEach(m => newObj[m.key] = "0");
+            monthsList.forEach(m => {
+                newObj[m.key] = "0";
+                newObj[m.key + "_Date"] = "";
+            });
 
             currentData.push(newObj);
             renderTable(currentData);
@@ -498,14 +470,16 @@
             if(!mode) return alert("Koi month available nahi hai!");
             if(!selectedDate) return alert("Kripya date select karein!");
 
-            const cellVal = `100|${selectedDate}`;
-
-            let person = currentData.find(p => getNameVal(p) === name);
+            let person = currentData.find(p => getVal(p, "Name") === name);
             if(person) {
                 if(mode === "FULL") {
-                    monthsList.forEach(m => person[m.key] = cellVal);
+                    monthsList.forEach(m => {
+                        person[m.key] = "100";
+                        person[m.key + "_Date"] = selectedDate;
+                    });
                 } else {
-                    person[mode] = cellVal;
+                    person[mode] = "100";
+                    person[mode + "_Date"] = selectedDate;
                 }
             }
             renderTable(currentData);
