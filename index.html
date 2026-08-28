@@ -237,30 +237,33 @@
             }
         }
 
-        async function fetchData() {
-            const tableBody = document.getElementById("tableBody");
-            try {
-                const res = await fetch(API_URL + "?t=" + new Date().getTime());
-                const json = await res.json();
-                
-                if (Array.isArray(json)) {
-                    currentData = json;
-                    setStatus(true, "Google Sheet connected");
-                    if (currentData.length === 0) {
-                        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#aaa;">No members added yet. Click Admin -> Add to create one.</td></tr>`;
-                        document.getElementById("grandTotal").innerText = `₹0`;
-                    } else {
-                        renderTable(currentData);
-                    }
+        window.handleSheetResponse = function(json) {
+            if (Array.isArray(json)) {
+                currentData = json;
+                setStatus(true, "Google Sheet connected");
+                if (currentData.length === 0) {
+                    document.getElementById("tableBody").innerHTML = `<tr><td colspan="5" style="text-align:center; color:#aaa;">No members added yet. Click Admin -> Add to create one.</td></tr>`;
+                    document.getElementById("grandTotal").innerText = `₹0`;
                 } else {
-                    setStatus(false, "Sheet Data Error");
-                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#ff4d4d;">Error loading data from Google Sheets!</td></tr>`;
+                    renderTable(currentData);
                 }
-            } catch(e) { 
-                console.error(e);
-                setStatus(false, "Connecting Issue");
-                tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#ff4d4d;">Unable to connect to Google Sheets. Check permissions!</td></tr>`;
+            } else {
+                setStatus(false, "Sheet Data Error");
             }
+        };
+
+        function fetchData() {
+            const oldScript = document.getElementById("jsonpScript");
+            if (oldScript) oldScript.remove();
+
+            const script = document.createElement("script");
+            script.id = "jsonpScript";
+            script.src = API_URL + "?callback=handleSheetResponse&t=" + new Date().getTime();
+            script.onerror = function() {
+                setStatus(false, "Connecting Issue");
+                document.getElementById("tableBody").innerHTML = `<tr><td colspan="5" style="text-align:center; color:#ff4d4d;">Unable to connect to Google Sheets. Check permissions!</td></tr>`;
+            };
+            document.body.appendChild(script);
         }
 
         function formatDateReadable(dateStr) {
