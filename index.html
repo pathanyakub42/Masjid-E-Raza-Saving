@@ -421,14 +421,10 @@
 
         async function sendPayload(payload) {
             try {
-                await fetch(API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain" },
-                    body: JSON.stringify(payload)
-                });
-            } catch(err) {
                 const params = new URLSearchParams(payload).toString();
                 await fetch(API_URL + "?" + params, { mode: "no-cors" });
+            } catch(err) {
+                console.error(err);
             }
         }
 
