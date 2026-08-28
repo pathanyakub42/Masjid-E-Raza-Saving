@@ -288,6 +288,18 @@
             return { amount: isNaN(num) ? 0 : num, date: "" };
         }
 
+        // 100% Robust Value Extractor for Sheet Headers
+        function getCellData(row, monthKey) {
+            if (!row) return 0;
+            const target = monthKey.trim().toLowerCase();
+            for (let k in row) {
+                if (k.trim().toLowerCase() === target) {
+                    return row[k];
+                }
+            }
+            return 0;
+        }
+
         function renderTable(data) {
             const tableBody = document.getElementById("tableBody");
             const memberSelect = document.getElementById("memberSelect");
@@ -301,8 +313,8 @@
                 let pendingMonths = [];
 
                 monthsList.forEach(m => {
-                    let cellData = row[m.key] !== undefined ? row[m.key] : row[m.label];
-                    let parsed = parseVal(cellData);
+                    let cellValue = getCellData(row, m.key);
+                    let parsed = parseVal(cellValue);
                     if (parsed.amount > 0) {
                         total += parsed.amount;
                     } else {
@@ -372,8 +384,8 @@
             let pendingMonthsCount = 0;
 
             monthsList.forEach(m => {
-                let cellData = person[m.key] !== undefined ? person[m.key] : person[m.label];
-                let parsed = parseVal(cellData);
+                let cellValue = getCellData(person, m.key);
+                let parsed = parseVal(cellValue);
                 if(parsed.amount === 0) {
                     monthSelect.innerHTML += `<option value="${m.key}">${m.label} (₹100)</option>`;
                     pendingMonthsCount++;
@@ -398,8 +410,8 @@
             grid.innerHTML = "";
 
             monthsList.forEach(m => {
-                let cellData = person[m.key] !== undefined ? person[m.key] : person[m.label];
-                let parsed = parseVal(cellData);
+                let cellValue = getCellData(person, m.key);
+                let parsed = parseVal(cellValue);
                 let isPaid = parsed.amount > 0;
                 if(isPaid) totalPaid += parsed.amount;
 
