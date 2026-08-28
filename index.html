@@ -277,7 +277,7 @@
         }
 
         function parseVal(val) {
-            if (val === undefined || val === null || val === "") return { amount: 0, date: "" };
+            if (val === undefined || val === null || val === "" || val === "0") return { amount: 0, date: "" };
             let str = String(val).trim();
             if (str.includes("|")) {
                 let parts = str.split("|");
@@ -288,16 +288,25 @@
             return { amount: isNaN(num) ? 0 : num, date: "" };
         }
 
-        // 100% Robust Value Extractor for Sheet Headers
         function getCellData(row, monthKey) {
             if (!row) return 0;
-            const target = monthKey.trim().toLowerCase();
+            const target = String(monthKey).trim().toLowerCase();
             for (let k in row) {
-                if (k.trim().toLowerCase() === target) {
+                if (String(k).trim().toLowerCase() === target) {
                     return row[k];
                 }
             }
             return 0;
+        }
+
+        function getNameVal(row) {
+            if (!row) return "";
+            for (let k in row) {
+                if (String(k).trim().toLowerCase() === "name") {
+                    return row[k];
+                }
+            }
+            return row.Name || "";
         }
 
         function renderTable(data) {
@@ -311,6 +320,7 @@
             data.forEach((row) => {
                 let total = 0;
                 let pendingMonths = [];
+                let memberName = getNameVal(row);
 
                 monthsList.forEach(m => {
                     let cellValue = getCellData(row, m.key);
@@ -330,17 +340,17 @@
                     ? "poore saal (12 Months)" 
                     : pendingMonths.join(", ");
                 
-                let waMessage = `Assalamu Alaikum ${row.Name}, Masjid E Raza Moharam saving ke ${pendingText} ke ₹${pending} baaki hain. Kripya jama karwayein.`;
+                let waMessage = `Assalamu Alaikum ${memberName}, Masjid E Raza Moharam saving ke ${pendingText} ke ₹${pending} baaki hain. Kripya jama karwayein.`;
 
                 let waBtn = pending > 0 
                     ? `<a class="btn btn-wa" href="https://wa.me/?text=${encodeURIComponent(waMessage)}" target="_blank">📲 Remind</a>`
                     : '';
 
-                let detailBtn = `<button class="btn btn-detail" onclick="showMemberDetails('${row.Name}')">📄 Details</button>`;
+                let detailBtn = `<button class="btn btn-detail" onclick="showMemberDetails('${memberName}')">📄 Details</button>`;
 
                 tableBody.innerHTML += `
                     <tr>
-                        <td style="min-width:140px;"><strong>${row.Name}</strong></td>
+                        <td style="min-width:140px;"><strong>${memberName}</strong></td>
                         <td>₹${total}</td>
                         <td>₹1200</td>
                         <td>${pendingDisplay}</td>
@@ -350,7 +360,8 @@
             });
 
             currentData.forEach(row => {
-                memberSelect.innerHTML += `<option value="${row.Name}">${row.Name}</option>`;
+                let name = getNameVal(row);
+                memberSelect.innerHTML += `<option value="${name}">${name}</option>`;
             });
 
             document.getElementById("grandTotal").innerText = `₹${grandTotal}`;
@@ -362,7 +373,7 @@
 
         function filterMembers() {
             const query = document.getElementById("searchInput").value.toLowerCase();
-            const filtered = currentData.filter(item => item.Name.toLowerCase().includes(query));
+            const filtered = currentData.filter(item => getNameVal(item).toLowerCase().includes(query));
             renderTable(filtered);
         }
 
@@ -378,7 +389,7 @@
             const monthSelect = document.getElementById("monthSelect");
             monthSelect.innerHTML = "";
 
-            const person = currentData.find(p => p.Name === selectedMember);
+            const person = currentData.find(p => getNameVal(p) === selectedMember);
             if(!person) return;
 
             let pendingMonthsCount = 0;
@@ -400,10 +411,10 @@
         }
 
         function showMemberDetails(memberName) {
-            const person = currentData.find(p => p.Name === memberName);
+            const person = currentData.find(p => getNameVal(p) === memberName);
             if(!person) return;
 
-            document.getElementById("modalMemberName").innerText = person.Name;
+            document.getElementById("modalMemberName").innerText = memberName;
             
             let totalPaid = 0;
             const grid = document.getElementById("monthGrid");
@@ -419,7 +430,7 @@
                 let dateText = dateFormatted ? `Received On ${dateFormatted}` : (isPaid ? 'Received' : '');
 
                 let delBtnHtml = (isAdmin && isPaid) 
-                    ? `<button class="btn-del" onclick="deletePayment('${person.Name}', '${m.key}')">🗑️ Delete</button>` 
+                    ? `<button class="btn-del" onclick="deletePayment('${memberName}', '${m.key}')">🗑️ Delete</button>` 
                     : '';
 
                 grid.innerHTML += `
@@ -448,9 +459,9 @@
         async function deletePayment(memberName, monthKey) {
             if(!confirm(`${memberName} ki ${monthKey} payment entry delete karna chahte hain?`)) return;
 
-            let person = currentData.find(p => p.Name === memberName);
+            let person = currentData.find(p => getNameVal(p) === memberName);
             if(person) {
-                person[monthKey] = 0;
+                person[monthKey] = "0";
             }
             renderTable(currentData);
             showMemberDetails(memberName);
@@ -465,7 +476,7 @@
             if(!name) return alert("Naam likhna zaroori hai!");
 
             let newObj = { Name: name };
-            monthsList.forEach(m => newObj[m.key] = 0);
+            monthsList.forEach(m => newObj[m.key] = "0");
 
             currentData.push(newObj);
             renderTable(currentData);
@@ -486,7 +497,7 @@
 
             const cellVal = `100|${selectedDate}`;
 
-            let person = currentData.find(p => p.Name === name);
+            let person = currentData.find(p => getNameVal(p) === name);
             if(person) {
                 if(mode === "FULL") {
                     monthsList.forEach(m => person[m.key] = cellVal);
