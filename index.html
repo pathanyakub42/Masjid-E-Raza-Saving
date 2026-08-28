@@ -266,17 +266,27 @@
             document.body.appendChild(script);
         }
 
-        function formatDateReadable(dateStr) {
-            if(!dateStr) return '';
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            const parts = String(dateStr).split('-');
+        function formatDateClean(dateStr) {
+            if(!dateStr || dateStr === "" || dateStr === "undefined") return '';
+            let s = String(dateStr).trim();
+            if (s.includes("GMT") || s.includes("T") || s.length > 15) {
+                try {
+                    let d = new Date(s);
+                    if (!isNaN(d.getTime())) {
+                        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                        return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+                    }
+                } catch(e){}
+            }
+            const parts = s.split('-');
             if(parts.length === 3) {
+                const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
                 const year = parts[0];
                 const monthIndex = parseInt(parts[1], 10) - 1;
                 const day = parseInt(parts[2], 10);
                 return `${day} ${months[monthIndex]} ${year}`;
             }
-            return dateStr;
+            return s;
         }
 
         function getVal(row, keyName) {
@@ -397,7 +407,7 @@
                 let isPaid = !isNaN(amt) && amt > 0;
                 if(isPaid) totalPaid += amt;
 
-                let dateFormatted = formatDateReadable(dateVal);
+                let dateFormatted = isPaid ? formatDateClean(dateVal) : '';
                 let dateText = dateFormatted ? `Received On ${dateFormatted}` : (isPaid ? 'Received' : '');
 
                 let delBtnHtml = (isAdmin && isPaid) 
