@@ -25,8 +25,8 @@
         .btn-gold { background: linear-gradient(45deg, #ffd700, #ffa500); color: #000; }
         .btn-admin { background: #e11d48; }
         .btn-wa { background: #25D366; color: #fff; padding: 4px 10px; font-size: 0.75rem; border-radius: 12px; margin-right: 5px; }
-        .btn-detail { background: rgba(255, 255, 255, 0.15); color: #ffd700; padding: 4px 10px; font-size: 0.75rem; border-radius: 12px; border: 1px solid rgba(255, 215, 0, 0.4); }
-        .btn-del { background: #ef4444; color: white; padding: 2px 6px; font-size: 0.65rem; border-radius: 6px; border: none; cursor: pointer; margin-top: 4px; }
+        .btn-detail { background: rgba(255, 255, 255, 0.15); color: #ffd700; padding: 4px 10px; font-size: 0.75rem; border-radius: 12px; border: 1px solid rgba(255, 215, 0, 0.4); cursor: pointer; }
+        .btn-del { background: #ef4444; color: white; padding: 4px 8px; font-size: 0.7rem; border-radius: 8px; border: none; cursor: pointer; margin-left: 5px; }
         .admin-only { display: none; }
         
         .stats-card { width: 100%; max-width: 1100px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 1.2rem; margin-bottom: 1.5rem; text-align: center; }
@@ -51,11 +51,12 @@
         .qr-card { background: #ffffff; padding: 15px; border-radius: 20px; display: inline-block; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
         .qr-card img { width: 320px; max-width: 85vw; height: auto; object-fit: contain; display: block; border-radius: 12px; }
 
-        .month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; max-height: 320px; overflow-y: auto; padding-right: 5px; }
-        .month-chip { padding: 8px 6px; border-radius: 10px; text-align: center; font-size: 0.8rem; font-weight: 600; display: flex; flex-direction: column; gap: 2px; align-items: center; }
+        .month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; max-height: 360px; overflow-y: auto; padding-right: 5px; }
+        .month-chip { padding: 10px 6px; border-radius: 12px; text-align: center; font-size: 0.8rem; font-weight: 600; display: flex; flex-direction: column; gap: 4px; align-items: center; justify-content: center; min-height: 85px; transition: transform 0.2s, box-shadow 0.2s; }
+        .month-chip:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
         .chip-paid { background: rgba(0, 255, 136, 0.15); color: #00ff88; border: 1px solid #00ff88; }
         .chip-unpaid { background: rgba(255, 77, 77, 0.12); color: #ff4d4d; border: 1px solid rgba(255, 77, 77, 0.3); }
-        .chip-date { font-size: 0.68rem; color: #e0e0e0; font-weight: 400; margin-top: 2px; }
+        .chip-date { font-size: 0.65rem; color: #e0e0e0; font-weight: 400; line-height: 1.1; margin-top: 2px; text-align: center; word-break: break-word; }
 
         .modal { display: none; position: fixed; inset: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
         .modal-content { position: relative; background: #1a2634; padding: 1.8rem 1.5rem; border-radius: 20px; width: 100%; max-width: 480px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 20px 40px rgba(0,0,0,0.6); margin: auto; }
@@ -67,6 +68,8 @@
         .form-group input, .form-group select { width: 100%; padding: 9px; border-radius: 8px; border: 1px solid #334e68; background: #0f172a; color: white; font-size: 0.95rem; }
         .modal-buttons { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1.2rem; }
         .btn-cancel { background: #475569; }
+
+        .pay-all-bar { display: none; justify-content: space-between; align-items: center; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 12px; padding: 8px 12px; margin-top: 10px; }
 
         @media print {
             .top-bar, .qr-section, .filter-section, .btn-wa, .btn-detail, .connection-badge { display: none !important; }
@@ -85,15 +88,15 @@
 
     <div class="connection-badge" id="statusBadge">
         <div class="badge-dot"></div>
-        <span id="statusText">Connecting Google Sheet...</span>
+        <span id="statusText">Connecting Realtime Database...</span>
     </div>
 
     <div class="top-bar">
         <div class="admin-status" id="adminStatus">Public View</div>
         <div class="controls">
             <button class="btn btn-admin" id="authBtn" onclick="toggleAdmin()">🔒 Admin</button>
-            <button class="btn btn-gold admin-only" onclick="openModal('addMemberModal')">➕ Add</button>
-            <button class="btn admin-only" onclick="openPayModal()">💵 Update</button>
+            <button class="btn btn-gold admin-only" onclick="openModal('addMemberModal')">➕ Add Member</button>
+            <button class="btn admin-only" onclick="migrateFromGoogleSheet()" style="background:#10b981;">🔄 Import Sheet Data</button>
             <button class="btn" onclick="window.print()">🖨️ Print</button>
         </div>
     </div>
@@ -116,6 +119,7 @@
             <table>
                 <thead>
                     <tr>
+                        <th style="width: 50px;">Sr.</th>
                         <th>Member Name</th>
                         <th>Recieved</th>
                         <th>Target</th>
@@ -124,7 +128,7 @@
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <tr><td colspan="5" style="text-align:center;">Loading...</td></tr>
+                    <tr><td colspan="6" style="text-align:center;">Loading Firebase Data...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -138,7 +142,6 @@
         </div>
     </div>
 
-    <!-- Modals -->
     <div class="modal" id="loginModal" onclick="closeOnOverlay(event, 'loginModal')">
         <div class="modal-content">
             <span class="close-icon" onclick="closeModal('loginModal')">&times;</span>
@@ -164,30 +167,26 @@
             </div>
             <div class="modal-buttons">
                 <button class="btn btn-cancel" onclick="closeModal('addMemberModal')">Cancel</button>
-                <button class="btn btn-gold" onclick="addMember()">Save</button>
+                <button class="btn btn-gold" id="saveMemberBtn" onclick="addMember()">Save</button>
             </div>
         </div>
     </div>
 
-    <div class="modal" id="payModal" onclick="closeOnOverlay(event, 'payModal')">
+    <div class="modal" id="quickPayModal" onclick="closeOnOverlay(event, 'quickPayModal')">
         <div class="modal-content">
-            <span class="close-icon" onclick="closeModal('payModal')">&times;</span>
-            <h3 style="color:#ffd700; margin-bottom:1.2rem;">Add Payment Entry</h3>
+            <span class="close-icon" onclick="closeModal('quickPayModal')">&times;</span>
+            <h3 style="color:#ffd700; margin-bottom:0.5rem;" id="quickPayTitle">Update Payment</h3>
+            <p style="color:#ccc; font-size:0.85rem; margin-bottom:1rem;" id="quickPaySub">Select payment date</p>
+            <input type="hidden" id="qpMemberId">
+            <input type="hidden" id="qpMonthKey">
+            
             <div class="form-group">
-                <label>Select Member</label>
-                <select id="memberSelect" onchange="updateAvailableMonths()"></select>
-            </div>
-            <div class="form-group">
-                <label>Select Month / Mode</label>
-                <select id="monthSelect"></select>
-            </div>
-            <div class="form-group">
-                <label>Select Payment Date</label>
-                <input type="date" id="payDate">
+                <label>Payment Date</label>
+                <input type="date" id="qpDate">
             </div>
             <div class="modal-buttons">
-                <button class="btn btn-cancel" onclick="closeModal('payModal')">Cancel</button>
-                <button class="btn" onclick="submitPayment()">Submit</button>
+                <button class="btn btn-cancel" onclick="closeModal('quickPayModal')">Cancel</button>
+                <button class="btn btn-gold" id="savePayBtn" onclick="confirmQuickPay()">Save Payment (₹100)</button>
             </div>
         </div>
     </div>
@@ -197,6 +196,12 @@
             <span class="close-icon" onclick="closeModal('detailsModal')">&times;</span>
             <h3 style="color:#ffd700; margin-bottom:0.2rem;" id="modalMemberName">Member Details</h3>
             <p style="color:#aaa; font-size:0.85rem;" id="modalMemberSummary">Monthly Payment Breakdown</p>
+
+            <div id="payAllBar" class="pay-all-bar">
+                <span style="font-size:0.8rem; color:#ffd700; font-weight:600;">Full Year Payment</span>
+                <button class="btn btn-gold" style="font-size:0.75rem; padding:4px 10px;" onclick="payAllMonthsPrompt()">⚡ Pay All (₹1200)</button>
+            </div>
+
             <div class="month-grid" id="monthGrid"></div>
             <div class="modal-buttons">
                 <button class="btn btn-gold" onclick="closeModal('detailsModal')">Close</button>
@@ -204,11 +209,28 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxJDrP-qcMHEC5kv2p3ZHZx5b0c_bUJunVdFdxQWdwx1JX_SciCPqjPMB5IDCiP0HLT/exec";
+        const firebaseConfig = {
+            apiKey: "AIzaSyA6Lpov6xg67mLU-RKyF_QUOMLU3lcXiKs",
+            authDomain: "masjid-e-raza-saving.firebaseapp.com",
+            databaseURL: "https://masjid-e-raza-saving-default-rtdb.firebaseio.com",
+            projectId: "masjid-e-raza-saving",
+            storageBucket: "masjid-e-raza-saving.firebasestorage.app",
+            messagingSenderId: "199529845896",
+            appId: "1:199529845896:web:bc8f608177c37d831b7b3d"
+        };
+
         const ADMIN_PASS = "Yakubkhan";
         let isAdmin = false;
-        let currentData = [];
+        let currentMembers = {};
+        let activeMemberId = null;
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const membersRef = database.ref('members');
 
         const monthsList = [
             { key: 'Aug26', label: 'Aug 2026' },
@@ -225,126 +247,89 @@
             { key: 'Jul27', label: 'Jul 2027' }
         ];
 
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('qpDate').valueAsDate = new Date();
+            initFirebaseRealtimeSync();
+        });
+
         function setStatus(connected, text) {
             const badge = document.getElementById("statusBadge");
             const statusText = document.getElementById("statusText");
             if(connected) {
                 badge.className = "connection-badge badge-connected";
-                statusText.innerText = text || "Google Sheet connected";
+                statusText.innerText = text || "Realtime Sync Active";
             } else {
                 badge.className = "connection-badge badge-disconnected";
-                statusText.innerText = text || "Connection Failed";
+                statusText.innerText = text || "Connecting Issue";
             }
         }
 
-        window.handleSheetResponse = function(json) {
-            if (Array.isArray(json)) {
-                currentData = json;
-                setStatus(true, "Google Sheet connected");
-                if (currentData.length === 0) {
-                    document.getElementById("tableBody").innerHTML = `<tr><td colspan="5" style="text-align:center; color:#aaa;">No members added yet. Click Admin -> Add to create one.</td></tr>`;
-                    document.getElementById("grandTotal").innerText = `₹0`;
-                } else {
-                    renderTable(currentData);
+        function initFirebaseRealtimeSync() {
+            membersRef.on('value', (snapshot) => {
+                currentMembers = snapshot.val() || {};
+                setStatus(true, "Firebase Realtime Connected");
+                renderTable();
+                if(activeMemberId && document.getElementById('detailsModal').style.display === 'flex') {
+                    showMemberDetails(activeMemberId);
                 }
-            } else {
-                setStatus(false, "Sheet Data Error");
-            }
-        };
-
-        function fetchData() {
-            const oldScript = document.getElementById("jsonpScript");
-            if (oldScript) oldScript.remove();
-
-            const script = document.createElement("script");
-            script.id = "jsonpScript";
-            script.src = API_URL + "?callback=handleSheetResponse&t=" + new Date().getTime();
-            script.onerror = function() {
-                setStatus(false, "Connecting Issue");
-                document.getElementById("tableBody").innerHTML = `<tr><td colspan="5" style="text-align:center; color:#ff4d4d;">Unable to connect to Google Sheets. Check permissions!</td></tr>`;
-            };
-            document.body.appendChild(script);
+            }, (error) => {
+                setStatus(false, "Connection Failed");
+            });
         }
 
-        function formatDateClean(dateStr) {
-            if(!dateStr || dateStr === "" || dateStr === "undefined") return '';
-            let s = String(dateStr).trim();
-            if (s.includes("GMT") || s.includes("T") || s.length > 15) {
-                try {
-                    let d = new Date(s);
-                    if (!isNaN(d.getTime())) {
-                        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                        return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-                    }
-                } catch(e){}
-            }
-            const parts = s.split('-');
-            if(parts.length === 3) {
-                const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                const year = parts[0];
-                const monthIndex = parseInt(parts[1], 10) - 1;
-                const day = parseInt(parts[2], 10);
-                return `${day} ${months[monthIndex]} ${year}`;
-            }
-            return s;
-        }
-
-        function getVal(row, keyName) {
-            if (!row) return "";
-            const target = String(keyName).trim().toLowerCase();
-            for (let k in row) {
-                if (String(k).trim().toLowerCase() === target) {
-                    return row[k];
-                }
-            }
-            return "";
-        }
-
-        function renderTable(data) {
+        function renderTable(filterQuery = '') {
             const tableBody = document.getElementById("tableBody");
-            const memberSelect = document.getElementById("memberSelect");
             tableBody.innerHTML = "";
-            memberSelect.innerHTML = "";
             let grandTotal = 0;
-            let totalTarget = currentData.length * 1200;
+            const keys = Object.keys(currentMembers);
+            let totalTarget = keys.length * 1200;
+            let srNo = 1;
 
-            data.forEach((row) => {
+            if (keys.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#aaa;">No members in database. Click Admin -> Import Sheet Data or Add Member.</td></tr>`;
+                document.getElementById("grandTotal").innerText = `₹0`;
+                document.getElementById("progressBar").style.width = `0%`;
+                document.getElementById("progressText").innerText = `Target Progress: 0%`;
+                return;
+            }
+
+            keys.forEach((key) => {
+                const member = currentMembers[key];
+                const name = member.name || "Unknown";
+                if (filterQuery && !name.toLowerCase().includes(filterQuery.toLowerCase())) return;
+
                 let total = 0;
                 let pendingMonths = [];
-                let memberName = getVal(row, "Name");
+                const payments = member.payments || {};
 
                 monthsList.forEach(m => {
-                    let amtStr = getVal(row, m.key);
-                    let amt = parseFloat(amtStr);
-                    if (!isNaN(amt) && amt > 0) {
-                        total += amt;
+                    if (payments[m.key] && payments[m.key].amount > 0) {
+                        total += parseFloat(payments[m.key].amount);
                     } else {
                         pendingMonths.push(m.label);
                     }
                 });
+
                 grandTotal += total;
 
                 let pending = 1200 - total;
                 let pendingDisplay = pending <= 0 ? `<span class="text-green">₹0 (Completed)</span>` : `<span class="text-red">₹${pending}</span>`;
                 let pendingText = pendingMonths.length === monthsList.length ? "poore saal (12 Months)" : pendingMonths.join(", ");
-                let waMessage = `Assalamu Alaikum ${memberName}, Masjid E Raza Moharam saving ke ${pendingText} ke ₹${pending} baaki hain. Kripya jama karwayein.`;
+                let waMessage = `Assalamu Alaikum ${name}, Masjid E Raza Moharam saving ke ${pendingText} ke ₹${pending} baaki hain. Kripya jama karwayein.`;
                 let waBtn = pending > 0 ? `<a class="btn btn-wa" href="https://wa.me/?text=${encodeURIComponent(waMessage)}" target="_blank">📲 Remind</a>` : '';
-                let detailBtn = `<button class="btn btn-detail" onclick="showMemberDetails('${memberName}')">📄 Details</button>`;
+                let detailBtn = `<button class="btn btn-detail" onclick="showMemberDetails('${key}')">📄 Details</button>`;
+                let deleteMemberBtn = isAdmin ? `<button class="btn-del" onclick="deleteMember('${key}', '${name}')">🗑️</button>` : '';
 
                 tableBody.innerHTML += `
                     <tr>
-                        <td style="min-width:140px;"><strong>${memberName}</strong></td>
+                        <td style="font-weight:600; color:#ffd700;">${srNo++}</td>
+                        <td style="min-width:140px;"><strong>${name}</strong> ${deleteMemberBtn}</td>
                         <td>₹${total}</td>
                         <td>₹1200</td>
                         <td>${pendingDisplay}</td>
                         <td>${waBtn} ${detailBtn}</td>
                     </tr>
                 `;
-            });
-
-            currentData.forEach(row => {
-                let name = getVal(row, "Name");
-                memberSelect.innerHTML += `<option value="${name}">${name}</option>`;
             });
 
             document.getElementById("grandTotal").innerText = `₹${grandTotal}`;
@@ -354,179 +339,230 @@
         }
 
         function filterMembers() {
-            const query = document.getElementById("searchInput").value.toLowerCase();
-            const filtered = currentData.filter(item => getVal(item, "Name").toLowerCase().includes(query));
-            renderTable(filtered);
+            const query = document.getElementById("searchInput").value;
+            renderTable(query);
         }
 
-        function openPayModal() {
-            if(currentData.length === 0) return alert("Pehle member add karein!");
-            document.getElementById("payDate").value = new Date().toISOString().split('T')[0];
-            updateAvailableMonths();
-            openModal('payModal');
-        }
+        function showMemberDetails(memberId) {
+            activeMemberId = memberId;
+            const member = currentMembers[memberId];
+            if (!member) return;
 
-        function updateAvailableMonths() {
-            const selectedMember = document.getElementById("memberSelect").value;
-            const monthSelect = document.getElementById("monthSelect");
-            monthSelect.innerHTML = "";
-
-            const person = currentData.find(p => getVal(p, "Name") === selectedMember);
-            if(!person) return;
-
-            let pendingMonthsCount = 0;
-
-            monthsList.forEach(m => {
-                let amt = parseFloat(getVal(person, m.key));
-                if(isNaN(amt) || amt === 0) {
-                    monthSelect.innerHTML += `<option value="${m.key}">${m.label} (₹100)</option>`;
-                    pendingMonthsCount++;
-                }
-            });
-
-            if(pendingMonthsCount === monthsList.length) {
-                monthSelect.innerHTML = `<option value="FULL">Full 1 Year (₹1200)</option>` + monthSelect.innerHTML;
-            } else if(pendingMonthsCount === 0) {
-                monthSelect.innerHTML = `<option value="">Sabhi Month ki Payment Complete h ✓</option>`;
-            }
-        }
-
-        function showMemberDetails(memberName) {
-            const person = currentData.find(p => getVal(p, "Name") === memberName);
-            if(!person) return;
-
-            document.getElementById("modalMemberName").innerText = memberName;
+            document.getElementById('modalMemberName').innerText = member.name;
+            const payments = member.payments || {};
+            let paidCount = 0;
+            monthsList.forEach(m => { if (payments[m.key] && payments[m.key].amount > 0) paidCount++; });
             
-            let totalPaid = 0;
-            const grid = document.getElementById("monthGrid");
-            grid.innerHTML = "";
+            document.getElementById('modalMemberSummary').innerText = `Paid: ${paidCount}/12 Months (Collected ₹${paidCount * 100})`;
+
+            // Full Year Payment Bar: Admin Only
+            const payAllBar = document.getElementById('payAllBar');
+            if (payAllBar) {
+                payAllBar.style.display = isAdmin ? 'flex' : 'none';
+            }
+
+            const monthGrid = document.getElementById('monthGrid');
+            monthGrid.innerHTML = '';
 
             monthsList.forEach(m => {
-                let amt = parseFloat(getVal(person, m.key));
-                let dateVal = getVal(person, m.key + "_Date");
-                let isPaid = !isNaN(amt) && amt > 0;
-                if(isPaid) totalPaid += amt;
+                const payInfo = payments[m.key];
+                const isPaid = payInfo && payInfo.amount > 0;
+                let formattedDate = isPaid && payInfo.date ? formatDateClean(payInfo.date) : '';
 
-                let dateFormatted = isPaid ? formatDateClean(dateVal) : '';
-                let dateText = dateFormatted ? `Received On ${dateFormatted}` : (isPaid ? 'Received' : '');
+                // Read-only logic for normal public view
+                let actionSubtitle = '';
+                if (isPaid) {
+                    actionSubtitle = `<span class="chip-date">${formattedDate}</span>`;
+                } else if (isAdmin) {
+                    actionSubtitle = '<span class="chip-date" style="color:#ffd700;">+ Tap to Pay</span>';
+                }
 
-                let delBtnHtml = (isAdmin && isPaid) 
-                    ? `<button class="btn-del" onclick="deletePayment('${memberName}', '${m.key}')">🗑️ Delete</button>` 
-                    : '';
-
-                grid.innerHTML += `
-                    <div class="month-chip ${isPaid ? 'chip-paid' : 'chip-unpaid'}">
+                monthGrid.innerHTML += `
+                    <div class="month-chip ${isPaid ? 'chip-paid' : 'chip-unpaid'}" 
+                         style="cursor: ${isAdmin ? 'pointer' : 'default'};" 
+                         onclick="handleMonthClick('${memberId}', '${m.key}', ${isPaid})">
                         <span>${m.label}</span>
-                        <span>${isPaid ? '₹' + amt : 'Pending'}</span>
-                        ${dateText ? `<span class="chip-date">${dateText}</span>` : ''}
-                        ${delBtnHtml}
+                        <span>${isPaid ? '₹' + payInfo.amount : 'Unpaid'}</span>
+                        ${actionSubtitle}
                     </div>
                 `;
             });
 
-            document.getElementById("modalMemberSummary").innerText = `Total Paid: ₹${totalPaid} / Pending: ₹${1200 - totalPaid}`;
             openModal('detailsModal');
         }
 
-        async function sendPayload(payload) {
-            try {
-                const params = new URLSearchParams(payload).toString();
-                await fetch(API_URL + "?" + params, { mode: "no-cors" });
-            } catch(err) {
-                console.error(err);
-            }
-        }
+        function handleMonthClick(memberId, monthKey, isPaid) {
+            if (!isAdmin) return; // Read-only for public
 
-        async function deletePayment(memberName, monthKey) {
-            if(!confirm(`${memberName} ki ${monthKey} payment entry delete karna chahte hain?`)) return;
-
-            let person = currentData.find(p => getVal(p, "Name") === memberName);
-            if(person) {
-                person[monthKey] = "0";
-                person[monthKey + "_Date"] = "";
-            }
-            renderTable(currentData);
-            showMemberDetails(memberName);
-
-            await sendPayload({ action: "DELETE_PAYMENT", Name: memberName, mode: monthKey });
-            setTimeout(fetchData, 3000);
-        }
-
-        async function addMember() {
-            const nameInput = document.getElementById("newMemberName");
-            const name = nameInput.value.trim();
-            if(!name) return alert("Naam likhna zaroori hai!");
-
-            let newObj = { Name: name };
-            monthsList.forEach(m => {
-                newObj[m.key] = "0";
-                newObj[m.key + "_Date"] = "";
-            });
-
-            currentData.push(newObj);
-            renderTable(currentData);
-            closeModal('addMemberModal');
-            nameInput.value = "";
-
-            await sendPayload({ action: "ADD", Name: name });
-            setTimeout(fetchData, 3000);
-        }
-
-        async function submitPayment() {
-            const name = document.getElementById("memberSelect").value;
-            const mode = document.getElementById("monthSelect").value;
-            const selectedDate = document.getElementById("payDate").value;
-
-            if(!mode) return alert("Koi month available nahi hai!");
-            if(!selectedDate) return alert("Kripya date select karein!");
-
-            let person = currentData.find(p => getVal(p, "Name") === name);
-            if(person) {
-                if(mode === "FULL") {
-                    monthsList.forEach(m => {
-                        person[m.key] = "100";
-                        person[m.key + "_Date"] = selectedDate;
-                    });
-                } else {
-                    person[mode] = "100";
-                    person[mode + "_Date"] = selectedDate;
+            if (isPaid) {
+                if (confirm(`Remove payment for ${monthKey}?`)) {
+                    database.ref(`members/${memberId}/payments/${monthKey}`).remove();
                 }
+            } else {
+                document.getElementById('qpMemberId').value = memberId;
+                document.getElementById('qpMonthKey').value = monthKey;
+                document.getElementById('quickPayTitle').innerText = `Pay ${monthKey}`;
+                openModal('quickPayModal');
             }
-            renderTable(currentData);
-            closeModal('payModal');
+        }
 
-            await sendPayload({ action: "UPDATE", Name: name, mode: mode, date: selectedDate });
-            setTimeout(fetchData, 3000);
+        function confirmQuickPay() {
+            const memberId = document.getElementById('qpMemberId').value;
+            const monthKey = document.getElementById('qpMonthKey').value;
+            const payDate = document.getElementById('qpDate').value;
+            const saveBtn = document.getElementById('savePayBtn');
+
+            if (!payDate) return alert('Select date!');
+
+            saveBtn.innerText = "Saving...";
+            saveBtn.disabled = true;
+
+            database.ref(`members/${memberId}/payments/${monthKey}`).set({
+                amount: 100,
+                date: payDate
+            }).then(() => {
+                saveBtn.innerText = "Save Payment (₹100)";
+                saveBtn.disabled = false;
+                closeModal('quickPayModal');
+            }).catch(err => {
+                saveBtn.innerText = "Save Payment (₹100)";
+                saveBtn.disabled = false;
+                alert("Error saving payment: " + err.message);
+            });
+        }
+
+        function payAllMonthsPrompt() {
+            if (!isAdmin || !activeMemberId) return;
+            const payDate = prompt(`Enter Payment Date for ALL 12 Months (YYYY-MM-DD):`, new Date().toISOString().split('T')[0]);
+            
+            if (payDate) {
+                const updates = {};
+                monthsList.forEach(m => {
+                    updates[`members/${activeMemberId}/payments/${m.key}`] = {
+                        amount: 100,
+                        date: payDate
+                    };
+                });
+                database.ref().update(updates).then(() => {
+                    alert("All 12 Months Paid Successfully! 🎉");
+                });
+            }
+        }
+
+        /* FIXED ADD MEMBER WITH ALERT & AUTO CLOSE */
+        function addMember() {
+            const nameInput = document.getElementById('newMemberName');
+            const saveBtn = document.getElementById('saveMemberBtn');
+            const name = nameInput.value.trim();
+
+            if (!name) return alert('Enter member name!');
+
+            saveBtn.innerText = "Saving...";
+            saveBtn.disabled = true;
+
+            const newRef = membersRef.push();
+            newRef.set({ name: name, payments: {} }).then(() => {
+                saveBtn.innerText = "Save";
+                saveBtn.disabled = false;
+                nameInput.value = '';
+                closeModal('addMemberModal');
+                alert(`Member "${name}" Added Successfully! 🎉`);
+            }).catch(err => {
+                saveBtn.innerText = "Save";
+                saveBtn.disabled = false;
+                alert("Error adding member: " + err.message);
+            });
+        }
+
+        function deleteMember(id, name) {
+            if (confirm(`Delete member "${name}" permanently?`)) {
+                membersRef.child(id).remove();
+            }
         }
 
         function toggleAdmin() {
-            if(isAdmin) {
+            if (!isAdmin) {
+                openModal('loginModal');
+            } else {
                 isAdmin = false;
-                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-                document.getElementById('adminStatus').innerText = "Public View";
-                document.getElementById('authBtn').innerText = "🔒 Admin";
-                document.getElementById('authBtn').style.background = "#e11d48";
-            } else { openModal('loginModal'); }
+                checkAdminUI();
+            }
         }
 
         function verifyPassword() {
-            const input = document.getElementById('adminPassword').value;
-            if(input === ADMIN_PASS) {
+            const pass = document.getElementById('adminPassword').value;
+            if (pass === ADMIN_PASS) {
                 isAdmin = true;
-                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
-                document.getElementById('adminStatus').innerText = "Admin Unlocked 🔓";
-                document.getElementById('authBtn').innerText = "🚪 Logout";
-                document.getElementById('authBtn').style.background = "#10b981";
+                checkAdminUI();
                 closeModal('loginModal');
-                document.getElementById('adminPassword').value = "";
-            } else { alert("Incorrect Password!"); }
+                document.getElementById('adminPassword').value = '';
+            } else {
+                alert('Incorrect Admin Password!');
+            }
+        }
+
+        function checkAdminUI() {
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? 'inline-flex' : 'none');
+            document.getElementById('adminStatus').innerText = isAdmin ? 'Admin Access Active' : 'Public View';
+            document.getElementById('authBtn').innerText = isAdmin ? '🔓 Logout' : '🔒 Admin';
+            document.getElementById('authBtn').className = isAdmin ? 'btn btn-gold' : 'btn btn-admin';
+            renderTable();
+        }
+
+        function formatDateClean(dateStr) {
+            if (!dateStr) return '';
+            try {
+                let d = new Date(dateStr);
+                if (!isNaN(d.getTime())) {
+                    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+                }
+            } catch(e){}
+            return dateStr;
         }
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function closeOnOverlay(event, id) { if(event.target.id === id) closeModal(id); }
+        function closeOnOverlay(e, id) { if (e.target.id === id) closeModal(id); }
 
-        fetchData();
+        /* GOOGLE SHEETS MIGRATION SCRIPT */
+        function migrateFromGoogleSheet() {
+            if (!isAdmin) return;
+            if (!confirm('Import all member data from Google Sheet to Firebase?')) return;
+
+            setStatus(false, 'Fetching Sheet Data...');
+            const OLD_API_URL = "https://script.google.com/macros/s/AKfycbxJDrP-qcMHEC5kv2p3ZHZx5b0c_bUJunVdFdxQWdwx1JX_SciCPqjPMB5IDCiP0HLT/exec";
+
+            window.handleSheetMigrate = function(json) {
+                if (Array.isArray(json)) {
+                    json.forEach(row => {
+                        let name = row["Name"] || row["name"];
+                        if (name) {
+                            let newRef = membersRef.push();
+                            let memberData = { name: name, payments: {} };
+
+                            monthsList.forEach(m => {
+                                let amt = parseFloat(row[m.key]);
+                                let dateVal = row[m.key + '_Date'];
+                                if (!isNaN(amt) && amt > 0) {
+                                    memberData.payments[m.key] = {
+                                        amount: amt,
+                                        date: dateVal || new Date().toISOString().split('T')[0]
+                                    };
+                                }
+                            });
+
+                            newRef.set(memberData);
+                        }
+                    });
+                    alert('Data Migration Successful! All members imported.');
+                }
+            };
+
+            const script = document.createElement("script");
+            script.src = OLD_API_URL + "?callback=handleSheetMigrate&t=" + new Date().getTime();
+            document.body.appendChild(script);
+        }
     </script>
 </body>
 </html>
